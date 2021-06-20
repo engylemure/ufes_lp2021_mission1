@@ -1,5 +1,6 @@
 import { Entity } from '@/utils'
 import { Grid } from '@/grid'
+import { Interface } from './interface'
 
 export class Game extends Entity {
     private _lastTimestamp = 0
@@ -18,6 +19,7 @@ export class Game extends Entity {
     public Awake(): void {
         super.Awake()
         this._entities.push(new Grid())
+        this._entities.push(new Interface())
         for (const entity of this.Entities) {
             entity.Awake()
         }
