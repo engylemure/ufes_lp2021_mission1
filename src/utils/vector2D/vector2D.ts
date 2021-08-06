@@ -13,4 +13,8 @@ export class Vector2D {
     } = {}): Vector2D {
         return new Vector2D(x, y)
     }
+
+    public static get Origin(): Vector2D {
+        return new Vector2D(0, 0)
+    }
 }

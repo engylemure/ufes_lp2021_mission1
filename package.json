@@ -1,6 +1,6 @@
 {
     "name": "crab-snake",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "",
     "main": "index.html",
     "homepage": "https://engylemure.github.io/ufes_lp2021_mission1",
@@ -10,7 +10,8 @@
         "test": "jest",
         "lint": "eslint ./src/**/*.ts",
         "format": "prettier --write --ignore-unknown ./src ./public package.json",
-        "deploy": "npm run build && gh-pages -d dist"
+        "deploy": "npm run build && gh-pages -d dist",
+        "clean": "rm -rf dist/"
     },
     "engines": {
         "node": ">=v14.17.1",
@@ -21,6 +22,7 @@
     "devDependencies": {
         "@types/events": "^3.0.0",
         "@types/jest": "^26.0.23",
+        "@types/lodash": "^4.14.172",
         "@typescript-eslint/eslint-plugin": "^4.27.0",
         "@typescript-eslint/parser": "^4.27.0",
         "babel-cli": "^6.26.0",
@@ -37,6 +39,8 @@
         "gh-pages": "^3.2.2",
         "html-webpack-plugin": "^5.3.1",
         "jest": "^27.0.4",
+        "lodash": "^4.17.21",
+        "ololog": "^1.1.175",
         "pre-commit": "^1.2.2",
         "prettier": "^2.3.1",
         "script-ext-html-webpack-plugin": "^2.1.5",
@@ -45,8 +49,7 @@
         "typescript": "^4.3.4",
         "webpack": "^5.39.1",
         "webpack-cli": "^4.7.2",
-        "webpack-dev-server": "^3.11.2",
-        "ololog": "^1.1.175"
+        "webpack-dev-server": "^3.11.2"
     },
     "pre-commit": [
         "lint",

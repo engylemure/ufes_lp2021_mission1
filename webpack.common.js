@@ -6,8 +6,21 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
+const { merge } = require('webpack-merge')
 
-module.exports = {
+const assets = {
+    module: {
+        rules: [
+            {
+                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                type: 'asset/resource',
+            },
+        ]
+    }
+}
+
+
+module.exports = merge(assets, {
     entry: {
         app: `${path.join(__dirname, 'src')}/main.ts`,
     },
@@ -21,7 +34,7 @@ module.exports = {
             {
                 test: /\.ts/,
                 use: 'ts-loader',
-                exclude: /node_modules/,
+                exclude: /(node_modules)/,
             },
             {
                 test: /\.js$/,
@@ -49,10 +62,10 @@ module.exports = {
         }),
         new CopyPlugin({
             patterns: [
-                { from: "public/normilize.css", to: "public" },
-                { from: "public/style.css", to: "public" },
-                { from: "public/favicon.ico", to: "public" }
-            ]
-        })
+                { from: 'public/normilize.css', to: 'public' },
+                { from: 'public/style.css', to: 'public' },
+                { from: 'public/favicon.png', to: 'public' },
+            ],
+        }),
     ],
-}
+})

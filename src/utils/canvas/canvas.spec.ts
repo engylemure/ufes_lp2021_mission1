@@ -7,7 +7,7 @@ describe('>>> Canvas', () => {
     let canvas: Canvas
 
     beforeEach(() => {
-        canvas = new Canvas(size)
+        canvas = new Canvas(size, 'test')
     })
 
     it('should create and attach canvas to the DOM when awakens', () => {
@@ -26,7 +26,7 @@ describe('>>> Canvas', () => {
         })
 
         it('should draw and fill the rect', () => {
-            const start = new Vector2D(0, 0)
+            const start = Vector2D.Origin
             const size = new Vector2D(10, 10)
             const beginPathSpy = jest.spyOn(canvas.Context, 'beginPath')
             const rectSpy = jest.spyOn(canvas.Context, 'rect')
@@ -40,7 +40,7 @@ describe('>>> Canvas', () => {
             expect(canvas.Context.fillStyle).toBe<string>('#ffffff')
         })
         it('should clear the rect', () => {
-            const start = new Vector2D(0, 0)
+            const start = Vector2D.Origin
             const size = new Vector2D(10, 10)
 
             const spy = jest.spyOn(canvas.Context, 'clearRect')
@@ -51,7 +51,7 @@ describe('>>> Canvas', () => {
             expect(spy).toBeCalledWith(start.x, start.y, size.x, size.y)
         })
         it('should draw and fill the circle', () => {
-            const center = new Vector2D(0, 0)
+            const center = Vector2D.Origin
             const radius = 1
 
             const beginPathSpy = jest.spyOn(canvas.Context, 'beginPath')

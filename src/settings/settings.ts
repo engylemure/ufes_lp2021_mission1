@@ -39,10 +39,17 @@ export enum GAME_ENV {
     PROD,
 }
 
+export enum SNAKE_SPEED_DIFFICULTY {
+    SANDBOX = 240,
+    EASY = 120,
+    MEDIUM = 60,
+    HARD = 30,
+}
+
 class _Settings {
     grid = GridSettings
     snake = {
-        speed: 120,
+        speed: SNAKE_SPEED_DIFFICULTY.EASY,
     }
     env = GAME_ENV.PROD
 
@@ -56,6 +63,7 @@ export const Settings = new _Settings()
 declare global {
     interface Window {
         [index: string]: any
+        __DEV__: boolean
     }
 }
 

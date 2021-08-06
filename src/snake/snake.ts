@@ -1,8 +1,15 @@
 import { Entity, Vector2D } from '@/utils'
 import { Color } from '@/utils/color'
 import { Settings } from '@/settings'
-import { Scalable } from '@/scalable'
+import { Node } from '@/node'
 import { GameState, GAME_EVENTS } from '@/game'
+import { SNAKE } from './assets'
+import { CanvasLayer } from '@/canvas-layer'
+
+const TailImg = new Image()
+TailImg.src = SNAKE.TAIL
+const HeadImg = new Image()
+HeadImg.src = SNAKE.HEAD.RIGHT
 
 export enum DIRECTION {
     UP,
@@ -14,12 +21,14 @@ export enum DIRECTION {
 export const SnakeColor: Color = new Color(247, 76, 0, 1)
 
 class SnakePart extends Entity {
-    private node: Scalable
+    private factor: number
+    private node: Node
     public position: Vector2D
-    constructor(node: Scalable, position: Vector2D) {
+    constructor(node: Node, position: Vector2D, factor = 1) {
         super()
         this.node = node
         this.position = position
+        this.factor = factor
     }
     public Awake(): void {
         super.Awake()
@@ -27,14 +36,18 @@ class SnakePart extends Entity {
     }
 
     public Update(deltaTime: number): void {
-        const { Start, End, Index } = Scalable.NodeArgsFromIndex(this.position)
-        this.node
+        super.Update(deltaTime)
+        const { Start, End, Index } = Node.NodeArgsFromIndex(this.position)
         this.node.UpdatePosition(Start, End, Index)
-        this.node.Update(deltaTime)
+        this.node.Update(deltaTime, () => this.node.Resize(this.factor))
     }
 
     public Clear(): void {
         this.node.Clear()
+    }
+
+    public get Node(): Node {
+        return this.node
     }
 }
 
@@ -51,21 +64,43 @@ export class Snake extends Entity {
 
     public Awake(): void {
         super.Awake()
-
-        const { Start, End, Index } = Scalable.NodeArgsFromIndex(
-            new Vector2D(0, 0)
-        )
-
+        const { Start, End, Index } = Node.NodeArgsFromIndex(Vector2D.Origin)
         this.head = new SnakePart(
-            new Scalable(Start, End, Index, SnakeColor),
+            new Node(
+                Start,
+                End,
+                Index,
+                undefined,
+                HeadImg,
+                CanvasLayer.Foreground
+            ),
             Index
         )
-
-        this.tail = []
         this.head.Awake()
     }
 
+    private UpdateHead(): void {
+        const img = this.head.Node.Image
+        if (!img) {
+            return
+        }
+        switch (this.direction) {
+            case DIRECTION.LEFT:
+                img.src = SNAKE.HEAD.LEFT
+                break
+            case DIRECTION.UP:
+                img.src = SNAKE.HEAD.UP
+                break
+            case DIRECTION.RIGHT:
+                img.src = SNAKE.HEAD.RIGHT
+                break
+            case DIRECTION.DOWN:
+                img.src = SNAKE.HEAD.DOWN
+        }
+    }
     public Update(deltaTime: number): void {
+        super.Update(deltaTime)
+        this.UpdateHead()
         if (
             (this.deltaTimeSinceLastUpdate >= Settings.snake.speed ||
                 this.deltaTimeSinceLastUpdate < 0) &&
@@ -99,6 +134,7 @@ export class Snake extends Entity {
                 this.head.position.y = 0
             }
             for (const part of this.tail) {
+                part.Clear()
                 if (this.head.position.equals(part.position)) {
                     // Handle Collision
                     this.gameState.Over()
@@ -108,22 +144,40 @@ export class Snake extends Entity {
                 part.position = lastPos
                 lastPos = tempPos
             }
-            this.Eat()
         } else {
             this.deltaTimeSinceLastUpdate += deltaTime
         }
-        super.Update(deltaTime)
         this.head.Update(deltaTime)
         this.tail.forEach((part) => part.Update(deltaTime))
     }
 
+    public isIndexAtSnake(index: Vector2D): boolean {
+        return (
+            this.isIndexAtHead(index) ||
+            (!!this.tail.length &&
+                !!this.tail.find((part) => part.Node.Index.equals(index)))
+        )
+    }
+
+    public isIndexAtHead(index: Vector2D): boolean {
+        return this.head?.Node.Index.equals(index)
+    }
+
     public Eat(): void {
-        const { Start, End, Index } = Scalable.NodeArgsFromIndex(
-            this.head.position
+        const { Start, End, Index } = Node.NodeArgsFromIndex(
+            new Vector2D(this.head.position.x, this.head.position.y)
         )
         const part = new SnakePart(
-            new Scalable(Start, End, Index, SnakeColor),
-            Index
+            new Node(
+                Start,
+                End,
+                Index,
+                undefined,
+                TailImg,
+                CanvasLayer.Foreground
+            ),
+            Index,
+            this.tail.length + 1
         )
         part.Awake()
         this.tail.push(part)
@@ -131,11 +185,13 @@ export class Snake extends Entity {
 
     private listenToEvents(): void {
         this.gameState.onEvent(GAME_EVENTS.RESTART, this.onRestart.bind(this))
+        this.gameState.onEvent(GAME_EVENTS.EAT, this.Eat.bind(this))
     }
 
     public onRestart(): void {
         this.head.Clear()
         this.tail.forEach((part) => part.Clear())
+        this.tail = []
         this.Awake()
     }
 }

@@ -4,6 +4,7 @@ import { CanvasLayer } from '@/canvas-layer'
 
 export class NodeDrawComponent implements IComponent {
     public Entity: Node
+    constructor(private Canvas = CanvasLayer.Background) {}
 
     public Awake(): void {
         this.Clear()
@@ -15,14 +16,22 @@ export class NodeDrawComponent implements IComponent {
     }
 
     private Draw(): void {
-        CanvasLayer.Background.FillRect(
-            this.Entity.Start,
-            this.Entity.Size,
-            this.Entity.color
-        )
+        if (this.Entity.Image) {
+            this.Canvas.RenderImage(
+                this.Entity.Start,
+                this.Entity.Size,
+                this.Entity.Image
+            )
+        } else {
+            this.Canvas.FillRect(
+                this.Entity.Start,
+                this.Entity.Size,
+                this.Entity.color
+            )
+        }
     }
 
     public Clear(): void {
-        CanvasLayer.Background.ClearRect(this.Entity.Start, this.Entity.Size)
+        this.Canvas.ClearRect(this.Entity.Start, this.Entity.Size)
     }
 }
