@@ -8,7 +8,12 @@ module.exports = {
     parserOptions: {
         parser: '@typescript-eslint/parser',
     },
-    extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+    extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        'prettier',
+        'plugin:prettier/recommended',
+    ],
     // add your custom rules here
     rules: {
         semi: ['error', 'never'],
@@ -21,9 +26,9 @@ module.exports = {
                 allowHigherOrderFunctions: true,
             },
         ],
-        "@typescript-eslint/naming-convention": [
-            "error",
-            { "selector": "variableLike", "format": ["camelCase", "PascalCase"] }
+        '@typescript-eslint/naming-convention': [
+            'error',
+            { selector: 'variableLike', format: ['camelCase', 'PascalCase'] },
         ],
         'no-unused-vars': 'off', // note you must disable the base rule as it can report incorrect errors
         '@typescript-eslint/no-unused-vars': [
@@ -50,6 +55,7 @@ module.exports = {
             },
         ],
     },
+    plugins: ['prettier'],
     overrides: [
         {
             files: ['*.js'],

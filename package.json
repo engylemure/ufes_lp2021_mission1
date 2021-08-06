@@ -13,7 +13,7 @@
         "deploy": "npm run build && gh-pages -d dist"
     },
     "engines": {
-        "node": ">=12.10.0",
+        "node": ">=v14.17.1",
         "npm": ">=6.10.3"
     },
     "author": "",
@@ -31,6 +31,8 @@
         "clean-webpack-plugin": "^4.0.0-alpha.0",
         "copy-webpack-plugin": "^9.0.0",
         "eslint": "^7.29.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^3.4.0",
         "gh-pages": "^3.2.2",
         "html-webpack-plugin": "^5.3.1",
         "jest": "^27.0.4",
