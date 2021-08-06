@@ -39,13 +39,19 @@ export enum GAME_ENV {
     PROD,
 }
 
-export const Settings = {
-    grid: GridSettings,
-    snake: {
+class _Settings {
+    grid = GridSettings
+    snake = {
         speed: 120,
-    },
-    env: GAME_ENV.PROD,
+    }
+    env = GAME_ENV.PROD
+
+    public get isDev(): boolean {
+        return this.env === GAME_ENV.DEV
+    }
 }
+
+export const Settings = new _Settings()
 
 declare global {
     interface Window {
