@@ -1,3 +1,7 @@
 import { Game } from '@/game'
 
-new Game().Awake()
+const game = new Game()
+
+game.Awake()
+
+window.game = game

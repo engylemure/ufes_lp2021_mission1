@@ -1,6 +1,5 @@
 import { IComponent } from '@/utils'
 import { Node } from '@/node'
-import { Settings } from '@/settings'
 import { CanvasLayer } from '@/canvas-layer'
 
 export class NodeDrawComponent implements IComponent {
@@ -19,11 +18,11 @@ export class NodeDrawComponent implements IComponent {
         CanvasLayer.Background.FillRect(
             this.Entity.Start,
             this.Entity.Size,
-            Settings.grid.color
+            this.Entity.color
         )
     }
 
-    private Clear(): void {
+    public Clear(): void {
         CanvasLayer.Background.ClearRect(this.Entity.Start, this.Entity.Size)
     }
 }

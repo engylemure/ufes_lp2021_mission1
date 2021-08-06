@@ -1,5 +1,5 @@
 {
-    "name": "tic-tac-toe-ts",
+    "name": "crab-snake",
     "version": "1.0.0",
     "description": "",
     "main": "index.html",
@@ -19,6 +19,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@types/events": "^3.0.0",
         "@types/jest": "^26.0.23",
         "@typescript-eslint/eslint-plugin": "^4.27.0",
         "@typescript-eslint/parser": "^4.27.0",
