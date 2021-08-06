@@ -33,7 +33,6 @@ export class Canvas implements IAwake {
     }
 
     public FillCircle(center: Vector2D, radius: number, color: Color): void {
-        // <--- CHANGE
         this._ctx.beginPath()
         this._ctx.arc(center.x, center.y, radius, 0, Math.PI * 2)
         this._ctx.fillStyle = color.AsString()

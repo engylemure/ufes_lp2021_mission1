@@ -30,6 +30,14 @@ module.exports = {
                     loader: 'babel-loader',
                 },
             },
+            {
+                test: /\.(png|jpe?g|gif|svg)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                    },
+                ],
+            },
         ],
     },
     resolve: {
@@ -49,10 +57,10 @@ module.exports = {
         }),
         new CopyPlugin({
             patterns: [
-                { from: "public/normilize.css", to: "public" },
-                { from: "public/style.css", to: "public" },
-                { from: "public/favicon.ico", to: "public" }
-            ]
-        })
+                { from: 'public/normilize.css', to: 'public' },
+                { from: 'public/style.css', to: 'public' },
+                { from: 'public/favicon.ico', to: 'public' },
+            ],
+        }),
     ],
 }
