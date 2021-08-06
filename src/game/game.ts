@@ -5,6 +5,10 @@ import { DIRECTION, Snake } from '@/snake'
 
 import { EventEmitter, Listener } from 'events'
 import { Food } from '@/food/food'
+import { Settings } from '@/settings'
+import ololog from 'ololog'
+
+const log = ololog.configure({ time: true, locate: false })
 
 export enum GAME_EVENTS {
     START = 'start',
@@ -28,6 +32,7 @@ export enum KEYS {
 
 export class GameState extends EventEmitter {
     private _isPaused = false
+    private _score = 0
 
     constructor() {
         super()
@@ -35,36 +40,63 @@ export class GameState extends EventEmitter {
         this.onEvent(GAME_EVENTS.START, this.onStart.bind(this))
     }
 
+    debugInfo(): { score: number; isPaused: boolean } {
+        return {
+            score: this._score,
+            isPaused: this._isPaused,
+        }
+    }
+
+    debug(...args: any): void {
+        if (Settings.isDev) {
+            log(args.length > 0 ? args : this.debugInfo())
+        }
+    }
+
+    private debugEvent(event: GAME_EVENTS): void {
+        if (Settings.isDev) {
+            log(event, this.debugInfo())
+        }
+    }
+
     public get isPaused(): boolean {
         return this._isPaused
     }
 
     Pause(): void {
+        this.debugEvent(GAME_EVENTS.PAUSE)
         this.emit(GAME_EVENTS.PAUSE)
     }
 
     Start(): void {
+        this.debugEvent(GAME_EVENTS.START)
         this.emit(GAME_EVENTS.START)
     }
 
     Eat(food: Food): void {
+        this._score += 1
+        this.debugEvent(GAME_EVENTS.EAT)
         this.emit(GAME_EVENTS.EAT, food)
     }
 
     Restart(): void {
+        this.debugEvent(GAME_EVENTS.RESTART)
         this.emit(GAME_EVENTS.RESTART)
     }
 
     Over(): void {
+        this.debugEvent(GAME_EVENTS.OVER)
         this.emit(GAME_EVENTS.OVER)
     }
 
     private onPause(): void {
         this._isPaused = true
+        this.debug()
     }
 
     private onStart(): void {
         this._isPaused = false
+        this.debug()
     }
 
     onEvent(event: GAME_EVENTS, callback: Listener): void {
@@ -142,19 +174,23 @@ export class Game extends Entity {
                 break
             case KEYS.ARROW_UP:
             case KEYS.W:
-                this._snake.direction = DIRECTION.UP
+                if (this._snake.direction != DIRECTION.DOWN)
+                    this._snake.direction = DIRECTION.UP
                 break
             case KEYS.ARROW_RIGHT:
             case KEYS.D:
-                this._snake.direction = DIRECTION.RIGHT
+                if (this._snake.direction != DIRECTION.LEFT)
+                    this._snake.direction = DIRECTION.RIGHT
                 break
             case KEYS.ARROW_LEFT:
             case KEYS.A:
-                this._snake.direction = DIRECTION.LEFT
+                if (this._snake.direction != DIRECTION.RIGHT)
+                    this._snake.direction = DIRECTION.LEFT
                 break
             case KEYS.ARROW_DOWN:
             case KEYS.S:
-                this._snake.direction = DIRECTION.DOWN
+                if (this._snake.direction != DIRECTION.UP)
+                    this._snake.direction = DIRECTION.DOWN
                 break
         }
         this._nextKey = null
