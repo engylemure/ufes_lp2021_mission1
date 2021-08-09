@@ -53,13 +53,36 @@ class SnakePart extends Entity {
 
 export class Snake extends Entity {
     private deltaTimeSinceLastUpdate = 0
-    direction: DIRECTION = DIRECTION.RIGHT
+    private directionSinceLastUpdate: DIRECTION | null = null
+    private _direction: DIRECTION = DIRECTION.RIGHT
+
     private head: SnakePart
     private tail: SnakePart[] = []
 
     constructor(private readonly gameState: GameState) {
         super()
         this.listenToEvents()
+    }
+
+    public changeDirection(direction: DIRECTION): void {
+        if (
+            this.tail.length > 0 &&
+            ((direction == DIRECTION.DOWN &&
+                this.directionSinceLastUpdate == DIRECTION.UP) ||
+                (direction == DIRECTION.RIGHT &&
+                    this.directionSinceLastUpdate == DIRECTION.LEFT) ||
+                (direction == DIRECTION.LEFT &&
+                    this.directionSinceLastUpdate == DIRECTION.RIGHT) ||
+                (direction == DIRECTION.UP &&
+                    this.directionSinceLastUpdate == DIRECTION.DOWN))
+        ) {
+            return
+        }
+        this._direction = direction
+    }
+
+    public get direction(): DIRECTION {
+        return this._direction
     }
 
     public Awake(): void {
@@ -107,6 +130,7 @@ export class Snake extends Entity {
             !this.gameState.isPaused
         ) {
             this.deltaTimeSinceLastUpdate = 0
+            this.directionSinceLastUpdate = this.direction
             let lastPos = this.head.position
             switch (this.direction) {
                 case DIRECTION.LEFT:

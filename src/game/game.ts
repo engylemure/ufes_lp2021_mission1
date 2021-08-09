@@ -191,23 +191,19 @@ export class Game extends Entity {
                 break
             case KEYS.ARROW_UP:
             case KEYS.W:
-                if (this._snake.direction != DIRECTION.DOWN)
-                    this._snake.direction = DIRECTION.UP
+                this._snake.changeDirection(DIRECTION.UP)
                 break
             case KEYS.ARROW_RIGHT:
             case KEYS.D:
-                if (this._snake.direction != DIRECTION.LEFT)
-                    this._snake.direction = DIRECTION.RIGHT
+                this._snake.changeDirection(DIRECTION.RIGHT)
                 break
             case KEYS.ARROW_LEFT:
             case KEYS.A:
-                if (this._snake.direction != DIRECTION.RIGHT)
-                    this._snake.direction = DIRECTION.LEFT
+                this._snake.changeDirection(DIRECTION.LEFT)
                 break
             case KEYS.ARROW_DOWN:
             case KEYS.S:
-                if (this._snake.direction != DIRECTION.UP)
-                    this._snake.direction = DIRECTION.DOWN
+                this._snake.changeDirection(DIRECTION.DOWN)
                 break
         }
         this._nextKey = null
