@@ -3,7 +3,9 @@
 First Mission for the Programming Language Course at UFES
 
 ## Development and Running
-Since this is a Web Game to run it locally you will need to have `node` with a prefferrable version `>=12` installed at your machine and a web browser:
+
+Since this is a Web Game developed with TS to run it locally you will need to have `node` with version `>=12` installed at your machine and a web browser:
+
 ### Installing dependencies 
 
 ```
@@ -23,4 +25,5 @@ npm run deploy
 ```
 
 ## Live at
+
 You can see the project at https://engylemure.github.io/ufes_lp2021_mission1

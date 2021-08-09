@@ -2,7 +2,7 @@ import { Node } from './node'
 import { Vector2D } from '@/utils'
 
 export const mockNodeFactory = (
-    start = new Vector2D(0, 0),
+    start = Vector2D.Origin,
     end = new Vector2D(1, 1),
-    index = new Vector2D(0, 0)
+    index = Vector2D.Origin
 ): Node => new Node(start, end, index)
