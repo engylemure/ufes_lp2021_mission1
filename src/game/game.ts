@@ -1,15 +1,12 @@
 import { Entity, Vector2D } from '@/utils'
 import { Grid } from '@/grid'
 import { Interface } from './interface'
-import { DIRECTION, Snake } from '@/snake'
+import { DIRECTION, Snake, SnakeState } from '@/snake'
 
-import { EventEmitter, Listener } from 'events'
-import { Food } from '@/food/food'
-import { Settings } from '@/settings'
-import ololog from 'ololog'
+import { Food, FoodState } from '@/food/food'
 import { CanvasLayer } from '@/canvas-layer'
-
-const log = ololog.configure({ time: true, locate: false })
+import { GameState, GameStateData } from './components'
+export { GameState } from './components'
 
 export enum GAME_EVENTS {
     START = 'start',
@@ -17,6 +14,8 @@ export enum GAME_EVENTS {
     RESTART = 'restart',
     EAT = 'eat',
     OVER = 'over',
+    SAVE = 'save',
+    LOAD = 'load',
 }
 
 export enum KEYS {
@@ -31,93 +30,17 @@ export enum KEYS {
     ENTER = 'Enter',
 }
 
-export class GameState extends EventEmitter {
-    private _isPaused = false
-    private _score = 0
-
-    constructor() {
-        super()
-        this.onEvent(GAME_EVENTS.PAUSE, this.onPause.bind(this))
-        this.onEvent(GAME_EVENTS.START, this.onStart.bind(this))
-    }
-
-    debugInfo(): { score: number; isPaused: boolean } {
-        return {
-            score: this._score,
-            isPaused: this._isPaused,
-        }
-    }
-
-    debug(...args: any): void {
-        if (Settings.isDev) {
-            log(args.length > 0 ? args : this.debugInfo())
-        }
-    }
-
-    private debugEvent(event: GAME_EVENTS): void {
-        if (Settings.isDev) {
-            log(event, this.debugInfo())
-        }
-    }
-
-    public get isPaused(): boolean {
-        return this._isPaused
-    }
-
-    Pause(): void {
-        this.debugEvent(GAME_EVENTS.PAUSE)
-        this.emit(GAME_EVENTS.PAUSE)
-    }
-
-    Start(): void {
-        this.debugEvent(GAME_EVENTS.START)
-        this.emit(GAME_EVENTS.START)
-    }
-
-    Eat(food: Food): void {
-        this._score += 1
-        this.debugEvent(GAME_EVENTS.EAT)
-        this.emit(GAME_EVENTS.EAT, food)
-    }
-
-    Restart(): void {
-        this._score = 0
-        this.debugEvent(GAME_EVENTS.RESTART)
-        this.emit(GAME_EVENTS.RESTART)
-    }
-
-    Over(): void {
-        this._score = 0
-        this.debugEvent(GAME_EVENTS.OVER)
-        this.emit(GAME_EVENTS.OVER)
-    }
-
-    private onPause(): void {
-        this._isPaused = true
-        this.debug()
-    }
-
-    private onStart(): void {
-        this._isPaused = false
-        this.debug()
-    }
-
-    onEvent(event: GAME_EVENTS, callback: Listener): void {
-        this.on(event, callback)
-    }
-
-    public get Score(): number {
-        return this._score
-    }
-}
-
 export class Game extends Entity {
     private _lastTimestamp = 0
     private _entities: Entity[] = []
     private _snake: Snake
+    private _savedState?: {
+        gameData: GameStateData
+        snakeState: SnakeState
+        foodState: FoodState
+    }
     private _food: Food
     private _nextKey: KEYS | null = null
-    private _state = new GameState()
 
     public get Entities(): Entity[] {
         return this._entities
@@ -128,17 +51,19 @@ export class Game extends Entity {
         // start update loop
         this.Update()
         this.attachKeyboard()
-        this._state.on(GAME_EVENTS.OVER, () => {
-            this._snake.onRestart()
-        })
     }
 
     public Awake(): void {
+        const state = new GameState()
+        this.AddComponent(state)
+        state.on(GAME_EVENTS.OVER, () => {
+            this._snake.onRestart()
+        })
         super.Awake()
         this._entities.push(new Grid())
-        this._snake = new Snake(this._state)
+        this._snake = new Snake(state)
         this._entities.push(this._snake)
-        this._entities.push(new Interface(this._state))
+        this._entities.push(new Interface(state))
         for (const entity of this.Entities) {
             entity.Awake()
         }
@@ -166,10 +91,14 @@ export class Game extends Entity {
         })
     }
 
+    private get state(): GameState {
+        return this.GetComponent(GameState)
+    }
+
     private handleKeydown(e: KeyboardEvent): void {
         if (this._nextKey == null || this._nextKey != e.code) {
             const code = e.code as KEYS
-            this._nextKey = this._state.isPaused
+            this._nextKey = this.state.isPaused
                 ? code === KEYS.ENTER
                     ? (code as KEYS)
                     : null
@@ -187,7 +116,7 @@ export class Game extends Entity {
         }
         switch (this._nextKey) {
             case KEYS.ENTER:
-                this._state.isPaused ? this._state.Start() : this._state.Pause()
+                this.state.isPaused ? this.state.Start() : this.state.Pause()
                 break
             case KEYS.ARROW_UP:
             case KEYS.W:
@@ -212,7 +141,7 @@ export class Game extends Entity {
     private createFood(): Food {
         let index: Vector2D
         while ((index = Food.RandomIndex) && this._snake.isIndexAtSnake(index));
-        const { Start, End, Index } = Food.NodeArgsFromIndex(index)
+        const { Start, End, Index } = Vector2D.NodeArgsFromIndex(index)
         return new Food(Start, End, Index, CanvasLayer.Foreground)
     }
 
@@ -223,14 +152,30 @@ export class Game extends Entity {
             (this._snake.isIndexAtSnake(index) ||
                 this._food.Index.equals(index))
         );
-        const { Start, End, Index } = Food.NodeArgsFromIndex(index)
+        const { Start, End, Index } = Vector2D.NodeArgsFromIndex(index)
         this._food.UpdatePosition(Start, End, Index)
     }
 
     private checkFoodCollision(): void {
         if (this._food && this._snake.isIndexAtHead(this._food.Index)) {
-            this._state.Eat(this._food)
+            this.state.Eat(this._food)
             this.updateFoodIndex()
+        }
+    }
+
+    public SaveState(): void {
+        this._savedState = {
+            snakeState: this._snake.SaveState(),
+            gameData: this.GetComponent(GameState).SaveData(),
+            foodState: this._food.SaveState(),
+        }
+    }
+
+    public LoadState(): void {
+        if (this._savedState) {
+            this._snake.LoadState(this._savedState.snakeState)
+            this.GetComponent(GameState).LoadData(this._savedState.gameData)
+            this._food.LoadState(this._savedState.foodState)
         }
     }
 }
