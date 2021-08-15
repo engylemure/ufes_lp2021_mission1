@@ -1,6 +1,6 @@
 {
     "name": "crab-snake",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "",
     "main": "index.html",
     "homepage": "https://engylemure.github.io/ufes_lp2021_mission1",
@@ -43,6 +43,7 @@
         "ololog": "^1.1.175",
         "pre-commit": "^1.2.2",
         "prettier": "^2.3.1",
+        "pretty-ms": "^7.0.1",
         "script-ext-html-webpack-plugin": "^2.1.5",
         "ts-jest": "^27.0.3",
         "ts-loader": "^9.2.3",

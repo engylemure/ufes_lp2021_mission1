@@ -2,17 +2,20 @@ import { IComponent, Vector2D } from '@/utils'
 import { Interface } from '@/game/interface'
 import { CanvasLayer } from '@/canvas-layer'
 import { Settings } from '@/settings'
+import prettyMs from 'pretty-ms'
 
 export class InterfaceDrawComponent implements IComponent {
     public Entity: Interface
 
     public Awake(): void {
-        CanvasLayer.Interface.Context.font = '30px Arial'
         this.Clear()
     }
 
     public Update(deltaTime: number): void {
         this.Clear()
+        CanvasLayer.Interface.Context.font = `${
+            CanvasLayer.Interface.Size.x / 30
+        }px Arial`
         this.Draw()
     }
 
@@ -26,9 +29,11 @@ export class InterfaceDrawComponent implements IComponent {
     }
 
     private Draw(): void {
-        const time = (this.Entity.GameTime / 1000).toFixed(2)
         CanvasLayer.Interface.RenderText(
-            `Score: ${this.Entity.Score}, Time: ${time}s`,
+            `Score: ${this.Entity.Score}, Time: ${prettyMs(
+                this.Entity.GameTime,
+                { secondsDecimalDigits: 2 }
+            )}`,
             new Vector2D(0, 30)
         )
     }

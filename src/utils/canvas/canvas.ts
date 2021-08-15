@@ -3,6 +3,7 @@ import { Color } from '../color'
 import { IAwake } from '../lifecycle'
 
 export class Canvas implements IAwake {
+    private _rotateArg?: number
     private _elm: HTMLCanvasElement
     private _ctx: CanvasRenderingContext2D
     constructor(public Size: Vector2D, public readonly name: string) {}
@@ -22,15 +23,40 @@ export class Canvas implements IAwake {
         this._ctx = ctx
     }
 
+    public Rotate(angle: number): Canvas {
+        this._rotateArg = angle
+        return this
+    }
+
+    private _rotate(start: Vector2D, size: Vector2D): void {
+        if (this._rotateArg) {
+            const x = start.x + size.x / 2,
+                y = start.y + size.y / 2
+            this._ctx.translate(x, y)
+            this._ctx.rotate(this._rotateArg)
+            this._ctx.translate(-x, -y)
+        }
+    }
+
+    private _clearRotation(): void {
+        if (this._rotateArg) {
+            this._rotateArg = undefined
+            this._ctx.setTransform(1, 0, 0, 1, 0, 0)
+        }
+    }
+
     public FillRect(start: Vector2D, size: Vector2D, color: Color): void {
+        this._rotate(start, size)
         this._ctx.beginPath()
         this._ctx.fillStyle = color.AsString()
         this._ctx.rect(start.x, start.y, size.x, size.y)
         this._ctx.fill()
+        this._clearRotation()
     }
 
     public ClearRect(start: Vector2D, size: Vector2D): void {
         this._ctx.clearRect(start.x, start.y, size.x, size.y)
+        this._clearRotation()
     }
 
     public FillCircle(center: Vector2D, radius: number, color: Color): void {
@@ -38,6 +64,7 @@ export class Canvas implements IAwake {
         this._ctx.arc(center.x, center.y, radius, 0, Math.PI * 2)
         this._ctx.fillStyle = color.AsString()
         this._ctx.fill()
+        this._clearRotation()
     }
 
     public RenderImage(
@@ -50,12 +77,15 @@ export class Canvas implements IAwake {
                 Workaround related to fixing image loading on Jest (Test environment)
             */
         } else {
+            this._rotate(start, size)
             this._ctx.drawImage(img, start.x, start.y, size.x, size.y)
         }
+        this._clearRotation()
     }
 
     public RenderText(text: string, start: Vector2D): void {
-        this._ctx.strokeText(text, start.x, start.y)
+        this._ctx.fillText(text, start.x, start.y)
+        this._clearRotation()
     }
 
     public get Element(): HTMLCanvasElement {
@@ -73,7 +103,13 @@ export class Canvas implements IAwake {
     public Resize(size: Vector2D): void {
         this.Size = size
         const canvas = this._elm
+        const font = this._ctx.font
         canvas.setAttribute('width', `${this.Size.x}px`)
         canvas.setAttribute('height', `${this.Size.y}px`)
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+            ctx.font = font
+            this._ctx = ctx
+        }
     }
 }
