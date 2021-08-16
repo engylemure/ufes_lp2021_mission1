@@ -112,4 +112,8 @@ export class Canvas implements IAwake {
             this._ctx = ctx
         }
     }
+
+    public get FontSize(): number {
+        return this.Size.x / 30
+    }
 }

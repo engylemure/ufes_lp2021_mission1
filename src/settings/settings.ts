@@ -1,5 +1,7 @@
 import { Color } from '@/utils/color'
 
+const MinDim = 720
+
 function getSize(): { height: number; width: number } {
     const body = document.body
     const html = document.documentElement
@@ -26,7 +28,7 @@ class GridSettings {
     static color: Color = new Color(245, 245, 245, 1)
     public static get nodeSize(): number {
         const { height, width } = getSize()
-        const smallerDim = height > width ? width : height
+        const smallerDim = Math.max(MinDim, Math.min(height, width))
         return (
             (smallerDim - this.nodeOffset * this.dimension * 1.5) /
             this.dimension

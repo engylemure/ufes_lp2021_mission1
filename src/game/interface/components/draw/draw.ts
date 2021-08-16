@@ -11,11 +11,13 @@ export class InterfaceDrawComponent implements IComponent {
         this.Clear()
     }
 
+    private get FontSize(): number {
+        return CanvasLayer.Interface.Size.x / 30
+    }
+
     public Update(deltaTime: number): void {
         this.Clear()
-        CanvasLayer.Interface.Context.font = `${
-            CanvasLayer.Interface.Size.x / 30
-        }px Arial`
+        CanvasLayer.Interface.Context.font = `${CanvasLayer.Interface.FontSize}px Arial`
         this.Draw()
     }
 
@@ -34,7 +36,15 @@ export class InterfaceDrawComponent implements IComponent {
                 this.Entity.GameTime,
                 { secondsDecimalDigits: 2 }
             )}`,
-            new Vector2D(0, 30)
+            new Vector2D(0, CanvasLayer.Interface.FontSize)
+        )
+        CanvasLayer.Interface.RenderText(
+            `FPS:${this.Entity.FPS.toFixed(1)}`,
+            new Vector2D(
+                CanvasLayer.Interface.Size.x -
+                    CanvasLayer.Interface.FontSize * 5,
+                CanvasLayer.Interface.FontSize
+            )
         )
     }
 }

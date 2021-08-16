@@ -18,6 +18,8 @@ export class GameState extends EventEmitter implements IComponent {
     private _isPaused = false
     private _matchTime = 0
     private _score = 0
+    private _lastDeltaTime = 0
+    private _fps = 0
 
     constructor() {
         super()
@@ -35,6 +37,11 @@ export class GameState extends EventEmitter implements IComponent {
                 this._matchTime += deltaTime
             }
         }
+        const diff = deltaTime - this._lastDeltaTime
+        if (diff > 0) {
+            this._fps = 1000 / diff
+        }
+        this._lastDeltaTime = deltaTime
     }
 
     public Awake(): void {
@@ -132,6 +139,10 @@ export class GameState extends EventEmitter implements IComponent {
 
     public get MatchTime(): number {
         return this._matchTime
+    }
+
+    public get FPS(): number {
+        return this._fps
     }
 
     public SaveData(): GameStateData {

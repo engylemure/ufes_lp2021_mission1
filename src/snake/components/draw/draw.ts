@@ -1,12 +1,12 @@
 import { IComponent, Vector2D } from '@/utils'
 import { SnakePart } from '@/snake'
 import { CanvasLayer } from '@/canvas-layer'
-import { Settings } from '@/settings'
 
-const MOVE_DURATION = 250
+const MOVE_DURATION = 150
 
 export class SnakePartDrawComponent implements IComponent {
     public Entity: SnakePart
+    private _lastDeltaTime: number = 0
     private _start: Vector2D
     constructor(
         public readonly Image: HTMLImageElement,
@@ -27,14 +27,15 @@ export class SnakePartDrawComponent implements IComponent {
         if (!this._start.equals(this.Entity.Start)) {
             this._updateStart(deltaTime)
         }
+        this._lastDeltaTime = deltaTime
         this.Draw()
     }
 
     private calcIncFromDeltaTime(deltaTime: number): number {
+        const diff = Math.abs(deltaTime - this._lastDeltaTime)
+        const val = diff / MOVE_DURATION
         return Math.round(
-            Math.floor(deltaTime)
-                ? this.Entity.Size.x / (MOVE_DURATION / deltaTime)
-                : this.Entity.Size.x / 15
+            diff > 0 ? this.Entity.Size.x * val : this.Entity.Size.x / 15
         )
     }
 

@@ -1,5 +1,5 @@
 import { Entity } from '@/utils'
-import { GameState, GAME_EVENTS } from '../game'
+import { GameState } from '../game'
 import { InterfaceDrawComponent } from './components'
 
 export class Interface extends Entity {
@@ -21,5 +21,9 @@ export class Interface extends Entity {
 
     public get Score(): number {
         return this.gameState.Score
+    }
+
+    public get FPS(): number {
+        return this.gameState.FPS
     }
 }
