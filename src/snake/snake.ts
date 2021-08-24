@@ -3,6 +3,7 @@ import { Color } from '@/utils/color'
 import { Settings } from '@/settings'
 import { GameState, GAME_EVENTS } from '@/game'
 import { SnakePart, SnakePartSave, SNAKE_PART } from './snake_part'
+import { SnakeAudioComponent } from './components/audio'
 
 export enum DIRECTION {
     UP,
@@ -64,8 +65,12 @@ export class Snake extends Entity {
         const { Start, End, Index } = Vector2D.NodeArgsFromIndex(
             Vector2D.Origin
         )
+        this._direction = DIRECTION.RIGHT
         this.head = new SnakePart(SNAKE_PART.HEAD, Start, End, Index)
         this.head.Awake()
+        const audioComponent = new SnakeAudioComponent(this.gameState)
+        audioComponent.Awake()
+        this.AddComponent(audioComponent)
     }
 
     private UpdateHead(): void {

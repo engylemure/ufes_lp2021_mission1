@@ -2,6 +2,10 @@
 
 First Mission for the Programming Language Course at UFES
 
+## Code Documentation
+
+Documentation available at [DOCS](./src/DOCS.md)
+
 ## Development and Running
 
 Since this is a Web Game developed with TS to run it locally you will need to have `node` with version `>=12` installed at your machine and a web browser:

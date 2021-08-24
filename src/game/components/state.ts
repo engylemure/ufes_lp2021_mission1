@@ -26,7 +26,8 @@ export class GameState extends EventEmitter implements IComponent {
     public Entity: Game
     private _gameHistories: Array<GameHistory> = []
     private _savedState?: GameSave
-    private _isPaused = false
+    private _isPaused = true
+    private _hasStarted = false
     private _matchTime = 0
     private _score = 0
     private _highestScore = 0
@@ -57,7 +58,7 @@ export class GameState extends EventEmitter implements IComponent {
     }
 
     public Awake(): void {
-        this._isPaused = false
+        this._isPaused = true
         this._score = 0
         this._matchTime = 0
     }
@@ -114,6 +115,7 @@ export class GameState extends EventEmitter implements IComponent {
         this._score = 0
         this._gameHistories.unshift([this.Entity.Save()])
         this.debugEvent(GAME_EVENTS.OVER)
+        this.emit(GAME_EVENTS.PAUSE)
         this.emit(GAME_EVENTS.OVER)
     }
 
@@ -150,6 +152,7 @@ export class GameState extends EventEmitter implements IComponent {
 
     private onStart(): void {
         this._isPaused = false
+        this._hasStarted = true
         this.debug()
     }
 
