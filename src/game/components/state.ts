@@ -1,11 +1,18 @@
-import { Food } from '@/food'
+import { Food, FoodState } from '@/food'
 import { Settings } from '@/settings'
+import { SnakeState } from '@/snake'
 import { IComponent } from '@/utils'
 import { EventEmitter, Listener } from 'events'
 import ololog from 'ololog'
-import { Game, GAME_EVENTS, GameSave } from '..'
+import { Game, GAME_EVENTS } from '..'
 
 const log = ololog.configure({ time: true, locate: false })
+
+export type GameSave = {
+    gameData: GameStateData
+    snakeState: SnakeState
+    foodState: FoodState
+}
 
 export type GameStateData = {
     isPaused: boolean
@@ -18,9 +25,11 @@ export type GameHistory = Array<GameSave>
 export class GameState extends EventEmitter implements IComponent {
     public Entity: Game
     private _gameHistories: Array<GameHistory> = []
+    private _savedState?: GameSave
     private _isPaused = false
     private _matchTime = 0
     private _score = 0
+    private _highestScore = 0
     private _lastDeltaTime = 0
     private _fps = 0
 
@@ -88,6 +97,9 @@ export class GameState extends EventEmitter implements IComponent {
 
     Eat(food: Food): void {
         this._score += 1
+        if (this._score > this._highestScore) {
+            this._highestScore = this._score
+        }
         this.debugEvent(GAME_EVENTS.EAT)
         this.emit(GAME_EVENTS.EAT, food)
     }
@@ -124,7 +136,7 @@ export class GameState extends EventEmitter implements IComponent {
     }
 
     private onSave(): void {
-        this.Entity.SaveState()
+        this._savedState = this.Entity.Save()
     }
 
     private onLoad(): void {
@@ -155,6 +167,14 @@ export class GameState extends EventEmitter implements IComponent {
 
     public get FPS(): number {
         return this._fps
+    }
+
+    public get HighestScore(): number {
+        return this._highestScore
+    }
+
+    public get GameSave(): GameSave | undefined {
+        return this._savedState
     }
 
     public SaveData(): GameStateData {

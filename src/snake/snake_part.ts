@@ -14,9 +14,9 @@ export enum SNAKE_PART {
 }
 
 export type SnakePartSave = {
-    part: SNAKE_PART,
-    factor: number,
-    rotateAngle: number,
+    part: SNAKE_PART
+    factor: number
+    rotateAngle: number
     index: Vector2D
 }
 
@@ -100,7 +100,7 @@ export class SnakePart extends Entity {
     }
 
     public static Load(save: SnakePartSave): SnakePart {
-        const {Start, Index, End } = Vector2D.NodeArgsFromIndex(save.index)
+        const { Start, Index, End } = Vector2D.NodeArgsFromIndex(save.index)
         return new SnakePart(
             save.part,
             Start,
@@ -116,7 +116,7 @@ export class SnakePart extends Entity {
             part: this.part,
             index: this.Index.Clone(),
             factor: this.factor,
-            rotateAngle: this.RotateAngle
+            rotateAngle: this.RotateAngle,
         }
     }
 }

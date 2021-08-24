@@ -1,11 +1,11 @@
 import { Entity, Vector2D } from '@/utils'
 import { Grid } from '@/grid'
 import { Interface } from './interface'
-import { DIRECTION, Snake, SnakeState } from '@/snake'
+import { DIRECTION, Snake } from '@/snake'
 
-import { Food, FoodState } from '@/food/food'
+import { Food } from '@/food/food'
 import { RenderLayer } from '@/render-layer'
-import { GameState, GameStateData } from './components'
+import { GameSave, GameState } from './components'
 export { GameState } from './components'
 
 export enum GAME_EVENTS {
@@ -30,18 +30,10 @@ export enum KEYS {
     ENTER = 'Enter',
 }
 
-
-export type GameSave = {
-    gameData: GameStateData
-    snakeState: SnakeState
-    foodState: FoodState
-}
-
 export class Game extends Entity {
     private _lastTimestamp = 0
     private _entities: Entity[] = []
     private _snake: Snake
-    private _savedState?: GameSave 
 
     private _food: Food
     private _nextKey: KEYS | null = null
@@ -175,15 +167,12 @@ export class Game extends Entity {
         }
     }
 
-    public SaveState(): void {
-        this._savedState = this.Save()
-    }
-
     public LoadState(): void {
-        if (this._savedState) {
-            this._snake.LoadState(this._savedState.snakeState)
-            this.GetComponent(GameState).LoadData(this._savedState.gameData)
-            this._food.LoadState(this._savedState.foodState)
+        const save = this.GetComponent(GameState).GameSave
+        if (save) {
+            this._snake.LoadState(save.snakeState)
+            this.GetComponent(GameState).LoadData(save.gameData)
+            this._food.LoadState(save.foodState)
         }
     }
 }

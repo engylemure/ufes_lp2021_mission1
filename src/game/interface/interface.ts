@@ -1,4 +1,5 @@
 import { Entity } from '@/utils'
+import { GameSave } from '../components'
 import { GameState } from '../game'
 import { InterfaceDrawComponent } from './components'
 
@@ -29,5 +30,33 @@ export class Interface extends Entity {
 
     public get isPaused(): boolean {
         return this.gameState.isPaused
+    }
+
+    public get HighestScore(): number {
+        return this.gameState.HighestScore
+    }
+
+    public get SavedData(): GameSave | undefined {
+        return this.gameState.GameSave
+    }
+
+    public Save(): void {
+        this.gameState.Save()
+    }
+
+    public Load(): void {
+        this.gameState.Load()
+    }
+
+    public Restart(): void {
+        this.gameState.Restart()
+    }
+
+    public Resume(): void {
+        this.gameState.Start()
+    }
+
+    public Pause(): void {
+        this.gameState.Pause()
     }
 }

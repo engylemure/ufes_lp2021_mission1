@@ -1,6 +1,11 @@
 # Changelog
 
+## 0.0.3 (2021-08-24)
+### Features
+ - Interface improvements and menu implementation. To access the menu you can click on the screen, on the menu you can select one of the available actions such as `Save`,`Load`, `Restart` or `Resume` the game.
+
 ## 0.0.2 (2021-08-15)
+
 ### Improvements
  - Improved snake movement rendering
  - Entities and Components rewrite for better usage of ECS

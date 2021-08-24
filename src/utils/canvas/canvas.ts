@@ -7,7 +7,11 @@ export class Canvas implements IAwake {
     private _rotateArg?: number
     private _elm: HTMLCanvasElement
     private _ctx: CanvasRenderingContext2D
-    constructor(public readonly root: Root, public Size: Vector2D, public readonly name: string) {}
+    constructor(
+        public readonly root: Root,
+        public Size: Vector2D,
+        public readonly name: string
+    ) {}
 
     public Awake(): void {
         const canvas = document.createElement('canvas')

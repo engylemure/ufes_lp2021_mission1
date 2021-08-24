@@ -46,7 +46,7 @@ export class SnakePartDrawComponent implements IComponent {
             this._start.x > this.Canvas.Size.y ||
             this._start.x < 0 ||
             this._start.y < 0 ||
-            this._start.Sub(this.Entity.Start).Module() < inc/2
+            this._start.Sub(this.Entity.Start).Module() < inc / 2
         ) {
             this._start = this.Entity.Start.Clone()
         } else {

@@ -1,10 +1,12 @@
-import {IAwake} from '../lifecycle'
+import { IAwake } from '../lifecycle'
 import { Vector2D } from '../vector2D'
 
 export class Root implements IAwake {
     private _elm: HTMLDivElement
     constructor(public Size: Vector2D) {}
-
+    public get Elm(): HTMLDivElement {
+        return this._elm
+    }
     public Awake(): void {
         const elem = document.createElement('div')
         elem.id = 'root-elm'

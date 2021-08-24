@@ -6,14 +6,16 @@ import { Root } from '../root'
 describe('>>> Canvas', () => {
     const size = new Vector2D(100, 100)
     let canvas: Canvas
-
+    let root: Root
     beforeEach(() => {
-        canvas = new Canvas(new Root(size), size, 'test')
+        root = new Root(size)
+        root.Awake()
+        canvas = new Canvas(root, size, 'test')
     })
 
     it('should create and attach canvas to the DOM when awakens', () => {
         const createElmSpy = jest.spyOn(document, 'createElement')
-        const appendChildSpy = jest.spyOn(document.body, 'appendChild')
+        const appendChildSpy = jest.spyOn(root.Elm, 'appendChild')
         expect(createElmSpy).not.toBeCalled()
         expect(appendChildSpy).not.toBeCalled()
         canvas.Awake()
