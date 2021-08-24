@@ -1,6 +1,6 @@
 import { IComponent, Vector2D } from '@/utils'
 import { SnakePart } from '@/snake'
-import { CanvasLayer } from '@/canvas-layer'
+import { RenderLayer } from '@/render-layer'
 
 const MOVE_DURATION = 150
 
@@ -11,7 +11,7 @@ export class SnakePartDrawComponent implements IComponent {
     constructor(
         public readonly Image: HTMLImageElement,
         public sizeFactor = 1,
-        private Canvas = CanvasLayer.Foreground
+        private Canvas = RenderLayer.Foreground
     ) {}
 
     public Awake(): void {
@@ -46,7 +46,7 @@ export class SnakePartDrawComponent implements IComponent {
             this._start.x > this.Canvas.Size.y ||
             this._start.x < 0 ||
             this._start.y < 0 ||
-            this._start.Sub(this.Entity.Start).Module() < inc
+            this._start.Sub(this.Entity.Start).Module() < inc/2
         ) {
             this._start = this.Entity.Start.Clone()
         } else {

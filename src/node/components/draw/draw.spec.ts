@@ -1,5 +1,5 @@
 import { NodeDrawComponent } from './draw'
-import { CanvasLayer } from '@/canvas-layer'
+import { RenderLayer } from '@/render-layer'
 import { mockNodeFactory } from '@/node'
 
 describe('>>> Node Draw Component', () => {
@@ -9,7 +9,7 @@ describe('>>> Node Draw Component', () => {
         comp.Entity = mockNodeFactory()
     })
     it('should cleanup when awakens', () => {
-        const spy = jest.spyOn(CanvasLayer.Background, 'ClearRect')
+        const spy = jest.spyOn(RenderLayer.Background, 'ClearRect')
         expect(spy).not.toBeCalled()
 
         comp.Awake()
@@ -17,8 +17,8 @@ describe('>>> Node Draw Component', () => {
         expect(spy).toBeCalled()
     })
     it('should cleanup and draw rect every frame', () => {
-        const spyClearRect = jest.spyOn(CanvasLayer.Background, 'ClearRect')
-        const spyFillRect = jest.spyOn(CanvasLayer.Background, 'FillRect')
+        const spyClearRect = jest.spyOn(RenderLayer.Background, 'ClearRect')
+        const spyFillRect = jest.spyOn(RenderLayer.Background, 'FillRect')
 
         expect(spyClearRect).not.toBeCalled()
         expect(spyFillRect).not.toBeCalled()

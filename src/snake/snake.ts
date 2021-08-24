@@ -2,7 +2,7 @@ import { Entity, Vector2D } from '@/utils'
 import { Color } from '@/utils/color'
 import { Settings } from '@/settings'
 import { GameState, GAME_EVENTS } from '@/game'
-import { SnakePart, SNAKE_PART } from './snake_part'
+import { SnakePart, SnakePartSave, SNAKE_PART } from './snake_part'
 
 export enum DIRECTION {
     UP,
@@ -21,8 +21,8 @@ enum HEAD_ANGLE {
 export const SnakeColor: Color = new Color(247, 76, 0, 1)
 export type SnakeState = {
     direction: DIRECTION
-    head: SnakePart
-    tail: SnakePart[]
+    head: SnakePartSave
+    tail: SnakePartSave[]
 }
 
 export class Snake extends Entity {
@@ -127,7 +127,7 @@ export class Snake extends Entity {
                 if (this.head.Index.equals(part.Index)) {
                     // Handle Collision
                     this.gameState.Over()
-                    break
+                    return
                 }
                 const tempPos = part.Index
                 part.Move(lastPos)
@@ -136,8 +136,11 @@ export class Snake extends Entity {
         } else {
             this.deltaTimeSinceLastUpdate += deltaTime
         }
-        this.head.Update(deltaTime)
         this.tail.forEach((part) => part.Update(deltaTime))
+        this.head.Update(deltaTime)
+        // if (this.deltaTimeSinceLastUpdate == 0) {
+        //     this.gameState.SaveOnHistory()
+        // }
     }
 
     public isIndexAtSnake(index: Vector2D): boolean {
@@ -186,17 +189,17 @@ export class Snake extends Entity {
     public SaveState(): SnakeState {
         return {
             direction: this.direction,
-            head: this.head.Clone(),
-            tail: this.tail.map((part) => part.Clone()),
+            head: this.head.Save(),
+            tail: this.tail.map((part) => part.Save()),
         }
     }
 
     public LoadState(state: SnakeState): void {
         this._direction = state.direction
         this.ResetState()
-        this.head = state.head.Clone()
+        this.head = SnakePart.Load(state.head)
         this.head.Awake()
-        this.tail = state.tail.map((part) => part.Clone())
+        this.tail = state.tail.map((part) => SnakePart.Load(part))
         this.tail.forEach((part) => part.Awake())
     }
 }

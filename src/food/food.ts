@@ -1,16 +1,16 @@
 import { Canvas, Entity, Vector2D } from '@/utils'
 import { Settings } from '@/settings'
-import { CanvasLayer } from '@/canvas-layer'
+import { RenderLayer } from '@/render-layer'
 import { FoodDrawComponent } from './components'
 
-export type FoodState = { start: Vector2D; end: Vector2D; index: Vector2D }
+export type FoodState = { index: Vector2D }
 
 export class Food extends Entity {
     constructor(
         public Start: Vector2D,
         public End: Vector2D,
         public Index: Vector2D,
-        public Canvas: Canvas = CanvasLayer.Foreground
+        public Canvas: Canvas = RenderLayer.Foreground
     ) {
         super()
     }
@@ -62,15 +62,14 @@ export class Food extends Entity {
 
     public SaveState(): FoodState {
         return {
-            start: this.Start.Clone(),
-            end: this.End.Clone(),
             index: this.Index.Clone(),
         }
     }
 
     public LoadState(state: FoodState): void {
-        this.Start = state.start
-        this.End = state.end
-        this.Index = state.index
+        const { Start, End, Index } = Vector2D.NodeArgsFromIndex(state.index)
+        this.Index = Index
+        this.Start = Start
+        this.End = End
     }
 }

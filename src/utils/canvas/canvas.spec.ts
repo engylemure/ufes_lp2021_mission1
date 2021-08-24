@@ -1,13 +1,14 @@
 import { Canvas } from './canvas'
 import { Vector2D } from '@/utils'
 import { Color } from '../color'
+import { Root } from '../root'
 
 describe('>>> Canvas', () => {
     const size = new Vector2D(100, 100)
     let canvas: Canvas
 
     beforeEach(() => {
-        canvas = new Canvas(size, 'test')
+        canvas = new Canvas(new Root(size), size, 'test')
     })
 
     it('should create and attach canvas to the DOM when awakens', () => {

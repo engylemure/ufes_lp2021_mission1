@@ -1,21 +1,21 @@
 import { Vector2D } from '@/utils'
 import { Color } from '../color'
 import { IAwake } from '../lifecycle'
+import { Root } from '../root'
 
 export class Canvas implements IAwake {
     private _rotateArg?: number
     private _elm: HTMLCanvasElement
     private _ctx: CanvasRenderingContext2D
-    constructor(public Size: Vector2D, public readonly name: string) {}
+    constructor(public readonly root: Root, public Size: Vector2D, public readonly name: string) {}
 
     public Awake(): void {
         const canvas = document.createElement('canvas')
         canvas.id = this.name
         canvas.setAttribute('width', `${this.Size.x}px`)
         canvas.setAttribute('height', `${this.Size.y}px`)
-        document.body.appendChild(canvas)
         this._elm = canvas
-
+        this.root.AddElement(canvas)
         const ctx = this._elm.getContext('2d')
         if (!ctx) {
             throw new Error('Context `2d` identifier is not supported')
@@ -80,11 +80,6 @@ export class Canvas implements IAwake {
             this._rotate(start, size)
             this._ctx.drawImage(img, start.x, start.y, size.x, size.y)
         }
-        this._clearRotation()
-    }
-
-    public RenderText(text: string, start: Vector2D): void {
-        this._ctx.fillText(text, start.x, start.y)
         this._clearRotation()
     }
 

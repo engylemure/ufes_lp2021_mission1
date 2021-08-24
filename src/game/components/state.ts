@@ -3,7 +3,7 @@ import { Settings } from '@/settings'
 import { IComponent } from '@/utils'
 import { EventEmitter, Listener } from 'events'
 import ololog from 'ololog'
-import { Game, GAME_EVENTS } from '..'
+import { Game, GAME_EVENTS, GameSave } from '..'
 
 const log = ololog.configure({ time: true, locate: false })
 
@@ -13,8 +13,11 @@ export type GameStateData = {
     score: number
 }
 
+export type GameHistory = Array<GameSave>
+
 export class GameState extends EventEmitter implements IComponent {
     public Entity: Game
+    private _gameHistories: Array<GameHistory> = []
     private _isPaused = false
     private _matchTime = 0
     private _score = 0
@@ -97,6 +100,7 @@ export class GameState extends EventEmitter implements IComponent {
 
     Over(): void {
         this._score = 0
+        this._gameHistories.unshift([this.Entity.Save()])
         this.debugEvent(GAME_EVENTS.OVER)
         this.emit(GAME_EVENTS.OVER)
     }
@@ -104,6 +108,14 @@ export class GameState extends EventEmitter implements IComponent {
     Save(): void {
         this.debugEvent(GAME_EVENTS.SAVE)
         this.emit(GAME_EVENTS.SAVE)
+    }
+
+    SaveOnHistory(): void {
+        if (this._gameHistories[0]) {
+            this._gameHistories[0].push(this.Entity.Save())
+        } else {
+            this._gameHistories[0] = [this.Entity.Save()]
+        }
     }
 
     Load(): void {

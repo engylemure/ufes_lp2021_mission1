@@ -26,4 +26,8 @@ export class Interface extends Entity {
     public get FPS(): number {
         return this.gameState.FPS
     }
+
+    public get isPaused(): boolean {
+        return this.gameState.isPaused
+    }
 }

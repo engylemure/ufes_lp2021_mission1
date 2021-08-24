@@ -1,10 +1,10 @@
 import { IComponent } from '@/utils'
 import { Node } from '@/node'
-import { CanvasLayer } from '@/canvas-layer'
+import { RenderLayer } from '@/render-layer'
 
 export class NodeDrawComponent implements IComponent {
     public Entity: Node
-    constructor(private Canvas = CanvasLayer.Background) {}
+    constructor(private Canvas = RenderLayer.Background) {}
 
     public Awake(): void {
         this.Clear()

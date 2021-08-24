@@ -4,7 +4,7 @@ import { Interface } from './interface'
 import { DIRECTION, Snake, SnakeState } from '@/snake'
 
 import { Food, FoodState } from '@/food/food'
-import { CanvasLayer } from '@/canvas-layer'
+import { RenderLayer } from '@/render-layer'
 import { GameState, GameStateData } from './components'
 export { GameState } from './components'
 
@@ -30,15 +30,19 @@ export enum KEYS {
     ENTER = 'Enter',
 }
 
+
+export type GameSave = {
+    gameData: GameStateData
+    snakeState: SnakeState
+    foodState: FoodState
+}
+
 export class Game extends Entity {
     private _lastTimestamp = 0
     private _entities: Entity[] = []
     private _snake: Snake
-    private _savedState?: {
-        gameData: GameStateData
-        snakeState: SnakeState
-        foodState: FoodState
-    }
+    private _savedState?: GameSave 
+
     private _food: Food
     private _nextKey: KEYS | null = null
 
@@ -77,7 +81,7 @@ export class Game extends Entity {
     }
 
     public Update(timestamp = 0): void {
-        CanvasLayer.ensureSize()
+        RenderLayer.ensureSize()
         const deltaTime = timestamp - this._lastTimestamp
         this.checkFoodCollision()
         this.checkKey()
@@ -142,7 +146,7 @@ export class Game extends Entity {
         let index: Vector2D
         while ((index = Food.RandomIndex) && this._snake.isIndexAtSnake(index));
         const { Start, End, Index } = Vector2D.NodeArgsFromIndex(index)
-        return new Food(Start, End, Index, CanvasLayer.Foreground)
+        return new Food(Start, End, Index, RenderLayer.Foreground)
     }
 
     private updateFoodIndex(): void {
@@ -163,12 +167,16 @@ export class Game extends Entity {
         }
     }
 
-    public SaveState(): void {
-        this._savedState = {
+    public Save(): GameSave {
+        return {
             snakeState: this._snake.SaveState(),
             gameData: this.GetComponent(GameState).SaveData(),
             foodState: this._food.SaveState(),
         }
+    }
+
+    public SaveState(): void {
+        this._savedState = this.Save()
     }
 
     public LoadState(): void {
