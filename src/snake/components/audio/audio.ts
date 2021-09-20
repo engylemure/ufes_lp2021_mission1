@@ -1,29 +1,51 @@
-import * as Tone from 'tone'
 import { IComponent } from '@/utils'
 import { Snake } from '@/snake'
 import { GameState, GAME_EVENTS } from '@/game'
 
 enum Notes {
-    C = 'C',
-    D = 'D',
-    E = 'E',
-    F = 'F',
-    G = 'G',
-    A = 'A',
-    B = 'B',
+    C = 261.6,
+    D = 293.7,
+    E = 329.6,
+    F = 349.2,
+    G = 392.0,
+    A = 440.0,
+    B = 493.9,
+}
+
+class Synth {
+    private context: AudioContext
+    private oscillator: OscillatorNode
+    private contextGain: GainNode
+
+    constructor(private frequency: number) {
+        this.context = new AudioContext()
+        this.oscillator = this.context.createOscillator()
+        this.contextGain = this.context.createGain()
+        this.oscillator.frequency.value = frequency
+        this.oscillator.type = 'sine'
+        this.oscillator.connect(this.contextGain)
+        this.contextGain.connect(this.context.destination)
+    }
+
+    start() {
+        this.oscillator.start(0)
+    }
+
+    stop(x = 0.1) {
+        this.contextGain.gain.exponentialRampToValueAtTime(
+            0.00001,
+            this.context.currentTime + x
+        )
+    }
 }
 
 export class SnakeAudioComponent implements IComponent {
     private hasToneStarted = false
-    private synth?: Tone.Synth<Tone.SynthOptions>
 
     constructor(private readonly gameState: GameState) {
         gameState.onEvent(GAME_EVENTS.START, this.InitializeTone.bind(this))
         gameState.onEvent(GAME_EVENTS.EAT, this.eatSound.bind(this))
         gameState.onEvent(GAME_EVENTS.OVER, this.overSound.bind(this))
-        if (!window.__DEV__) {
-            this.synth = new Tone.Synth().toDestination()
-        }
     }
 
     Update(deltaTime: number): void {}
@@ -50,22 +72,22 @@ export class SnakeAudioComponent implements IComponent {
     }
 
     private overSound(): void {
-        const now = Tone.now()
-        this.synth?.triggerAttack(`${this.getNote()}3`, now)
-        this.synth?.triggerRelease(now + 0.5)
+        const synth = new Synth(this.getNote())
+        synth.start()
+        synth.stop(5)
     }
 
     private eatSound(): void {
-        const now = Tone.now()
-        this.synth?.triggerAttack(`${Notes.C}4`, now)
-        this.synth?.triggerRelease(now + 0.05)
+        const synth = new Synth(Notes.C)
+        synth.start()
+        synth.stop()
     }
 
     private async InitializeTone(): Promise<void> {
-        if (!this.hasToneStarted) {
-            await Tone.start()
-            this.hasToneStarted = true
-        }
+        // if (!this.hasToneStarted) {
+        //     await Tone.start()
+        //     this.hasToneStarted = true
+        // }
     }
 
     public Entity: Snake

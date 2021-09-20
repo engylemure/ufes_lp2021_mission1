@@ -4,7 +4,7 @@ This is a Small Snake Game that uses some basic concepts of [ECS](https://pt.wik
 
 ### What is ECS and How it's being used
 
-Basically our System is composed by different Entities, Entities have Components that are responsible for giving the Entity functionalities such as Rendering, Playing or storing some information.
+Basically our System is composed by different [Entities](), Entities have Components that are responsible for giving the Entity functionalities such as Rendering, Playing or storing some information.
 
 Our game is composed by the `Game` entity that stores some other entities such as the `Food`, `Snake`, `Grid` (composed by `Node` Entities) and the `Interface`. To access their documentation you can click at:
 
