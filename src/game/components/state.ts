@@ -180,6 +180,10 @@ export class GameState extends EventEmitter implements IComponent {
         return this._savedState
     }
 
+    public get HasStarted(): boolean {
+        return this._hasStarted
+    }
+
     public SaveData(): GameStateData {
         return {
             score: this.Score,

@@ -40,6 +40,10 @@ export class Interface extends Entity {
         return this.gameState.GameSave
     }
 
+    public get HasStarted(): boolean {
+        return this.gameState.HasStarted
+    }
+
     public Save(): void {
         this.gameState.Save()
     }
