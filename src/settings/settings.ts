@@ -42,19 +42,24 @@ export enum GAME_ENV {
 }
 
 export enum SNAKE_SPEED_DIFFICULTY {
-    SANDBOX = 240,
-    EASY = 120,
-    MEDIUM = 60,
-    HARD = 30,
+    SANDBOX = 220,
+    EASY = 180,
+    NORMAL = 140,
+    HARD = 100,
 }
 
 class _Settings {
     grid = GridSettings
     snake = {
-        speed: SNAKE_SPEED_DIFFICULTY.EASY,
+        speed: SNAKE_SPEED_DIFFICULTY.NORMAL,
     }
     env = GAME_ENV.PROD
-
+    public changeSnakeSpeed(speed: SNAKE_SPEED_DIFFICULTY): void {
+        this.snake.speed = speed
+    }
+    public get snakeSpeed(): SNAKE_SPEED_DIFFICULTY {
+        return this.snake.speed
+    }
     public get isDev(): boolean {
         return this.env === GAME_ENV.DEV
     }

@@ -1,7 +1,7 @@
 import { IComponent, Vector2D } from '@/utils'
 import { Interface } from '@/game/interface'
 import { RenderLayer } from '@/render-layer'
-import { Settings } from '@/settings'
+import { Settings, SNAKE_SPEED_DIFFICULTY } from '@/settings'
 import prettyMs from 'pretty-ms'
 import { Root } from '@/utils/root'
 import { GameState } from '@/game/components'
@@ -21,6 +21,11 @@ export class InterfaceDrawComponent implements IComponent {
     private _restartButtonElm: HTMLButtonElement
     private _resumeButtonElm: HTMLButtonElement
     private _savedDataElm: HTMLDivElement
+    private _snakeSpeedElm: HTMLDivElement
+    private _snakeSpeedEasyElm: HTMLButtonElement
+    private _snakeSpeedSandboxElm: HTMLButtonElement
+    private _snakeSpeedNormalElm: HTMLButtonElement
+    private _snakeSpeedHardElm: HTMLButtonElement
 
     private restartButtonElm(): HTMLButtonElement {
         const restart = document.createElement('button')
@@ -34,7 +39,7 @@ export class InterfaceDrawComponent implements IComponent {
     private resumeButtonElm(): HTMLButtonElement {
         const resume = document.createElement('button')
         this.applyStyleObject(resume, this.buttonStyle(true))
-        resume.innerText = 'Resume'
+        resume.innerText = 'Start'
         this._resumeButtonElm = resume
         resume.onclick = () => this.Entity.Resume()
         return resume
@@ -61,6 +66,7 @@ export class InterfaceDrawComponent implements IComponent {
             boxShadow: hasColor ? '0 0 1px grey' : '',
         }
     }
+
     private saveButtonElm(): HTMLButtonElement {
         const save = document.createElement('button')
         this.applyStyleObject(save, this.buttonStyle(true))
@@ -91,11 +97,71 @@ export class InterfaceDrawComponent implements IComponent {
         return savedData
     }
 
+    private snakeSpeedSandboxElm(): HTMLButtonElement {
+        const button = document.createElement('button')
+        this.applyStyleObject(button, this.buttonStyle(true))
+        button.innerText = 'Sandbox'
+        this._snakeSpeedSandboxElm = button
+        button.onclick = () =>
+            Settings.changeSnakeSpeed(SNAKE_SPEED_DIFFICULTY.SANDBOX)
+        return button
+    }
+
+    private snakeSpeedEasyElm(): HTMLButtonElement {
+        const button = document.createElement('button')
+        this.applyStyleObject(button, this.buttonStyle(true))
+        button.innerText = 'Easy'
+        this._snakeSpeedEasyElm = button
+        button.onclick = () =>
+            Settings.changeSnakeSpeed(SNAKE_SPEED_DIFFICULTY.EASY)
+        return button
+    }
+
+    private snakeSpeedNormalElm(): HTMLButtonElement {
+        const button = document.createElement('button')
+        this.applyStyleObject(button, this.buttonStyle(true))
+        button.innerText = 'Normal'
+        this._snakeSpeedNormalElm = button
+        button.onclick = () =>
+            Settings.changeSnakeSpeed(SNAKE_SPEED_DIFFICULTY.NORMAL)
+        return button
+    }
+
+    private snakeSpeedHardElm(): HTMLButtonElement {
+        const button = document.createElement('button')
+        this.applyStyleObject(button, this.buttonStyle(true))
+        button.innerText = 'Hard'
+        this._snakeSpeedHardElm = button
+        button.onclick = () =>
+            Settings.changeSnakeSpeed(SNAKE_SPEED_DIFFICULTY.HARD)
+        return button
+    }
+
+    private snakeSpeedElm(): HTMLDivElement {
+        const elm = document.createElement('div')
+        this.applyStyleObject(elm, {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1,
+        })
+        this._snakeSpeedElm = elm
+        const title = document.createElement('span')
+        title.innerText = 'Difficulty'
+        elm.appendChild(title)
+        elm.appendChild(this.snakeSpeedSandboxElm())
+        elm.appendChild(this.snakeSpeedEasyElm())
+        elm.appendChild(this.snakeSpeedNormalElm())
+        elm.appendChild(this.snakeSpeedHardElm())
+        return elm
+    }
+
     private createMenuElm(): HTMLDivElement {
         const menu = document.createElement('div')
         this.applyStyleObject(menu, {
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
             borderRadius: '4px',
             border: '1px solid grey',
             zIndex: '4',
@@ -103,15 +169,24 @@ export class InterfaceDrawComponent implements IComponent {
             width: '50%',
             boxShadow: '0 0 4px grey',
             background: 'white',
+        })
+        const inner = document.createElement('div')
+        this.applyStyleObject(inner, {
+            display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'center',
+            flex: 4,
         })
         this._menuElm = menu
-        menu.appendChild(this.maxScoreElm())
-        menu.appendChild(this.resumeButtonElm())
-        menu.appendChild(this.saveButtonElm())
-        menu.appendChild(this.savedDataElm())
-        menu.appendChild(this.loadButtonElm())
-        menu.appendChild(this.restartButtonElm())
+        inner.appendChild(this.maxScoreElm())
+        inner.appendChild(this.resumeButtonElm())
+        inner.appendChild(this.saveButtonElm())
+        inner.appendChild(this.savedDataElm())
+        inner.appendChild(this.loadButtonElm())
+        inner.appendChild(this.restartButtonElm())
+        menu.appendChild(inner)
+        menu.appendChild(this.snakeSpeedElm())
         menu.onclick = (ev) => ev.stopPropagation()
         return menu
     }
@@ -207,7 +282,18 @@ export class InterfaceDrawComponent implements IComponent {
             this._loadButtonElm.disabled = true
             this._savedDataElm.innerText = 'No saved data'
         }
+        if (this.Entity.HasStarted) {
+            this._resumeButtonElm.innerText = 'Resume'
+        }
         this._maxScoreElm.innerText = `Highest Score: ${this.Entity.HighestScore}`
+        this._snakeSpeedSandboxElm.disabled =
+            Settings.snakeSpeed === SNAKE_SPEED_DIFFICULTY.SANDBOX
+        this._snakeSpeedEasyElm.disabled =
+            Settings.snakeSpeed === SNAKE_SPEED_DIFFICULTY.EASY
+        this._snakeSpeedNormalElm.disabled =
+            Settings.snakeSpeed === SNAKE_SPEED_DIFFICULTY.NORMAL
+        this._snakeSpeedHardElm.disabled =
+            Settings.snakeSpeed === SNAKE_SPEED_DIFFICULTY.HARD
     }
 
     private Clear(): void {}

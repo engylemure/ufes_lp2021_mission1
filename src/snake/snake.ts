@@ -88,64 +88,62 @@ export class Snake extends Entity {
                 this.head.RotateAngle = HEAD_ANGLE.DOWN
         }
     }
-
     public Update(deltaTime: number): void {
         super.Update(deltaTime)
-        this.UpdateHead()
-        if (
-            (this.deltaTimeSinceLastUpdate >= Settings.snake.speed ||
-                this.deltaTimeSinceLastUpdate < 0) &&
-            !this.gameState.isPaused
-        ) {
-            this.deltaTimeSinceLastUpdate = 0
-            this.directionSinceLastUpdate = this.direction
-            let lastPos = this.head.Index
-            let newIndex
-            switch (this.direction) {
-                case DIRECTION.LEFT:
-                    newIndex = lastPos.Add(new Vector2D(-1, 0))
-                    break
-                case DIRECTION.UP:
-                    newIndex = lastPos.Add(new Vector2D(0, -1))
-                    break
-                case DIRECTION.DOWN:
-                    newIndex = lastPos.Add(new Vector2D(0, 1))
-                    break
-                case DIRECTION.RIGHT:
-                    newIndex = lastPos.Add(new Vector2D(1, 0))
-            }
-            // Overrided Move
-            if (newIndex.x < 0) {
-                newIndex.x = Settings.grid.dimension - 1
-            }
-            if (newIndex.x >= Settings.grid.dimension) {
-                newIndex.x = 0
-            }
-            if (newIndex.y < 0) {
-                newIndex.y = Settings.grid.dimension - 1
-            }
-            if (newIndex.y >= Settings.grid.dimension) {
-                newIndex.y = 0
-            }
-            this.head.Move(newIndex)
-            for (const part of this.tail) {
-                if (this.head.Index.equals(part.Index)) {
-                    // Handle Collision
-                    this.gameState.Over()
-                    return
+        if (!this.gameState.isPaused) {
+            this.UpdateHead()
+            if (
+                (this.deltaTimeSinceLastUpdate >= Settings.snake.speed ||
+                    this.deltaTimeSinceLastUpdate < 0) &&
+                !this.gameState.isPaused
+            ) {
+                this.deltaTimeSinceLastUpdate = 0
+                this.directionSinceLastUpdate = this.direction
+                let lastPos = this.head.Index
+                let newIndex
+                switch (this.direction) {
+                    case DIRECTION.LEFT:
+                        newIndex = lastPos.Add(new Vector2D(-1, 0))
+                        break
+                    case DIRECTION.UP:
+                        newIndex = lastPos.Add(new Vector2D(0, -1))
+                        break
+                    case DIRECTION.DOWN:
+                        newIndex = lastPos.Add(new Vector2D(0, 1))
+                        break
+                    case DIRECTION.RIGHT:
+                        newIndex = lastPos.Add(new Vector2D(1, 0))
                 }
-                const tempPos = part.Index
-                part.Move(lastPos)
-                lastPos = tempPos
+                // Overrided Move
+                if (newIndex.x < 0) {
+                    newIndex.x = Settings.grid.dimension - 1
+                }
+                if (newIndex.x >= Settings.grid.dimension) {
+                    newIndex.x = 0
+                }
+                if (newIndex.y < 0) {
+                    newIndex.y = Settings.grid.dimension - 1
+                }
+                if (newIndex.y >= Settings.grid.dimension) {
+                    newIndex.y = 0
+                }
+                this.head.Move(newIndex)
+                for (const part of this.tail) {
+                    if (this.head.Index.equals(part.Index)) {
+                        // Handle Collision
+                        this.gameState.Over()
+                        return
+                    }
+                    const tempPos = part.Index
+                    part.Move(lastPos)
+                    lastPos = tempPos
+                }
+            } else {
+                this.deltaTimeSinceLastUpdate += deltaTime
             }
-        } else {
-            this.deltaTimeSinceLastUpdate += deltaTime
         }
-        this.tail.forEach((part) => part.Update(deltaTime))
         this.head.Update(deltaTime)
-        // if (this.deltaTimeSinceLastUpdate == 0) {
-        //     this.gameState.SaveOnHistory()
-        // }
+        this.tail.forEach((part) => part.Update(deltaTime))
     }
 
     public isIndexAtSnake(index: Vector2D): boolean {
